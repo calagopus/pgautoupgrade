@@ -119,7 +119,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: calagopus-rs/pgautoupgrade
+          images: ghcr.io/calagopus/pgautoupgrade
           flavor: |
             latest=false
           # add a .0 to each Postgres version so it is compliant with semantic version

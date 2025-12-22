@@ -75,15 +75,15 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-to: type=inline
           cache-from: |
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-9.5-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-9.6-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-10-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-11-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-12-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-13-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-14-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-15-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-16-${{ matrix.flavor }}
-            type=registry,ref=calagopus-rs/pgautoupgrade:build-17-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-9.5-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-9.6-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-10-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-11-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-12-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-13-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-14-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-15-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-16-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-17-${{ matrix.flavor }}
             type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ env.BRANCH_NAME }}-${{ matrix.alias }}
             type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ env.HEAD_SHA }}-${{ matrix.alias }}
