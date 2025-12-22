@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: pgautoupgrade/pgautoupgrade:${TARGET_TAG:-dev}
+    image: ghcr.io/calagopus/pgautoupgrade:${TARGET_TAG:-dev}
     env_file: .env
     volumes:
       - ./postgres-data:/var/lib/postgresql

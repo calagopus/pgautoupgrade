@@ -31,12 +31,12 @@ manually (not great): <https://github.com/docker-library/postgres/issues/37>
 
 This image is on Docker Hub:
 
-<https://hub.docker.com/r/pgautoupgrade/pgautoupgrade>
+<https://hub.docker.com/r/ghcr.io/calagopus/pgautoupgrade>
 
 To always use the latest version of PostgreSQL, use the tag
 `latest`:
 
-    pgautoupgrade/pgautoupgrade:latest
+    ghcr.io/calagopus/pgautoupgrade:latest
 
 Please note that our `latest` tag is based on Alpine Linux,
 whereas the `latest` tag used by the official Docker
@@ -46,7 +46,7 @@ If you instead want to run a specific version of PostgreSQL
 then pick a matching tag on our Docker Hub. For example, to
 use PostgreSQL 18 you can use the `18-alpine` tag:
 
-    pgautoupgrade/pgautoupgrade:18-alpine
+    ghcr.io/calagopus/pgautoupgrade:18-alpine
 
 > [!NOTE]
 > The images available in Github Container Registry are for debugging
@@ -64,7 +64,7 @@ To solve that problem, we have Debian based images available as well.
 To use either of those, choose the version of PostgreSQL you'd
 like to upgrade to, then change your docker image to match:
 
-    pgautoupgrade/pgautoupgrade:18-trixie
+    ghcr.io/calagopus/pgautoupgrade:18-trixie
 
 ### "One shot" mode
 
@@ -132,7 +132,7 @@ initContainers:
     value: /bitnami/postgresql/data
   - name: POSTGRES_PASSWORD
     value: password
-image: pgautoupgrade/pgautoupgrade:18-trixie
+image: ghcr.io/calagopus/pgautoupgrade:18-trixie
 name: upgrade-postgres
 securityContext:
   runAsUser: 0

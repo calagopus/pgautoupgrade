@@ -53,9 +53,9 @@ jobs:
           build-args: |
             "PGTARGET=${{ env.LATEST_POSTGRES_VERSION }}"
           target: "build-${{ matrix.pg_version }}"
-          tags: "ghcr.io/calagopus-rs/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}"
+          tags: "ghcr.io/calagopus/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}"
           cache-to: type=inline
-          cache-from: type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}
+          cache-from: type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}
 
   target-images:
     runs-on: ubuntu-22.04
@@ -66,14 +66,14 @@ jobs:
       # but still use our public caches in any case
       # they might be outdated, in which case a full rebuild will be triggered
       CACHE_FROM: |
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:build-13-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:build-14-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:build-15-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:build-16-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:build-17-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}${{ matrix.operating_system.OS_VERSION }}
-        type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.alias }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-13-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-14-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-15-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-16-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-17-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}${{ matrix.operating_system.OS_VERSION }}
+        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.alias }}
 
     permissions:
       contents: read
@@ -156,8 +156,8 @@ jobs:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
           tags: |
-            "ghcr.io/calagopus-rs/pgautoupgrade:${{ matrix.operating_system.flavor }}"
-            "ghcr.io/calagopus-rs/pgautoupgrade:${{ matrix.operating_system.alias }}"
+            "ghcr.io/calagopus/pgautoupgrade:${{ matrix.operating_system.flavor }}"
+            "ghcr.io/calagopus/pgautoupgrade:${{ matrix.operating_system.alias }}"
           build-args: |
             "PGTARGET=${{ matrix.pg_target.PG_VERSION }}"
           push: true
@@ -171,7 +171,7 @@ jobs:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
           tags: |
-            "ghcr.io/calagopus-rs/pgautoupgrade:latest"
+            "ghcr.io/calagopus/pgautoupgrade:latest"
           build-args: |
             "PGTARGET=${{ matrix.pg_target.PG_VERSION }}"
           push: true

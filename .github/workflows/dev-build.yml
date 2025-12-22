@@ -5,85 +5,85 @@ on:
   workflow_dispatch:
 
 env:
-    # Uses docker.io for Docker Hub if empty
-    REGISTRY: ghcr.io
-    # github.repository as <account>/<repo>
-    IMAGE_NAME: ${{ github.repository }}
+  # Uses docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-    build:
-        runs-on: ubuntu-22.04
-        permissions:
-            contents: read
-            packages: write
-        strategy:
-            matrix:
-                include:
-                    - flavor: "alpine"
-                      alias: "alpine"
-                    - flavor: "trixie"
-                      alias: "debian"
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - flavor: "alpine"
+            alias: "alpine"
+          - flavor: "trixie"
+            alias: "debian"
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-            # Login against a container registry
-            # https://github.com/docker/login-action
-            - name: Log into registry ${{ env.REGISTRY }}
-              uses: docker/login-action@v3
-              with:
-                  registry: ${{ env.REGISTRY }}
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+      # Login against a container registry
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-            # Extract metadata (tags, labels) for container
-            # https://github.com/docker/metadata-action
-            - name: Extract container metadata
-              id: meta
-              uses: docker/metadata-action@v5
-              with:
-                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      # Extract metadata (tags, labels) for container
+      # https://github.com/docker/metadata-action
+      - name: Extract container metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-            # Setup QEMU emulator to build multi-arch images
-            # https://github.com/docker/setup-qemu-action
-            - name: Set up QEMU
-              uses: docker/setup-qemu-action@v3
+      # Setup QEMU emulator to build multi-arch images
+      # https://github.com/docker/setup-qemu-action
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-            # Configure Buildx for Docker build
-            # https://github.com/docker/setup-buildx-action
-            - name: Set up Buildx
-              id: buildx
-              uses: docker/setup-buildx-action@v3
+      # Configure Buildx for Docker build
+      # https://github.com/docker/setup-buildx-action
+      - name: Set up Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
 
-            # Build and push container images
-            # https://github.com/docker/build-push-action
-            - name: Build and push ${{ matrix.tag_suffix }} image
-              uses: docker/build-push-action@v6
-              env:
-                BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-                HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-              with:
-                  context: .
-                  file: "Dockerfile.${{ matrix.flavor }}"
-                  push: true
-                  # ghcr.io/${{ github.repository }} not used, to match dockerhub image naming
-                  tags: |
-                    ghcr.io/calagopus-rs/pgautoupgrade:${{ env.BRANCH_NAME }}-${{ matrix.alias }}
-                    ghcr.io/calagopus-rs/pgautoupgrade:${{ env.HEAD_SHA }}-${{ matrix.alias }}
-                  labels: ${{ steps.meta.outputs.labels }}
-                  platforms: linux/amd64,linux/arm64
-                  cache-to: type=inline
-                  cache-from: |
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-9.5-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-9.6-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-10-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-11-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-12-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-13-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-14-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-15-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-16-${{ matrix.flavor }}
-                    type=registry,ref=calagopus-rs/pgautoupgrade:build-17-${{ matrix.flavor }}
-                    type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:${{ env.BRANCH_NAME }}-${{ matrix.alias }}
-                    type=registry,ref=ghcr.io/calagopus-rs/pgautoupgrade:${{ env.HEAD_SHA }}-${{ matrix.alias }}
+      # Build and push container images
+      # https://github.com/docker/build-push-action
+      - name: Build and push ${{ matrix.tag_suffix }} image
+        uses: docker/build-push-action@v6
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        with:
+          context: .
+          file: "Dockerfile.${{ matrix.flavor }}"
+          push: true
+          # ghcr.io/${{ github.repository }} not used, to match dockerhub image naming
+          tags: |
+            ghcr.io/calagopus/pgautoupgrade:${{ env.BRANCH_NAME }}-${{ matrix.alias }}
+            ghcr.io/calagopus/pgautoupgrade:${{ env.HEAD_SHA }}-${{ matrix.alias }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          cache-to: type=inline
+          cache-from: |
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-9.5-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-9.6-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-10-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-11-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-12-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-13-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-14-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-15-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-16-${{ matrix.flavor }}
+            type=registry,ref=calagopus-rs/pgautoupgrade:build-17-${{ matrix.flavor }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ env.BRANCH_NAME }}-${{ matrix.alias }}
+            type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ env.HEAD_SHA }}-${{ matrix.alias }}

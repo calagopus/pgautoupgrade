@@ -1,7 +1,7 @@
 .PHONY: local attach before clean down server test up pushdev
 
 local:
-	docker build -f Dockerfile.alpine -t pgautoupgrade/pgautoupgrade:local .
+	docker build -f Dockerfile.alpine -t ghcr.io/calagopus/pgautoupgrade:local .
 
 attach:
 	docker exec -it pgauto /bin/bash
@@ -14,12 +14,12 @@ before:
 		--mount type=bind,source=$(abspath $(CURDIR))/test/postgres-data,target=/var/lib/postgresql/data \
 		-e POSTGRES_PASSWORD=password \
 		-e PGAUTO_DEVEL=before \
-		pgautoupgrade/pgautoupgrade:local
+		ghcr.io/calagopus/pgautoupgrade:local
 
 clean:
 	docker image rm --force \
-		pgautoupgrade/pgautoupgrade:dev \
-		pgautoupgrade/pgautoupgrade:local
+		ghcr.io/calagopus/pgautoupgrade:dev \
+		ghcr.io/calagopus/pgautoupgrade:local
 	docker image prune -f
 	docker volume prune -f
 
@@ -33,7 +33,7 @@ server:
 	docker run --name pgauto -it --rm --mount type=bind,source=$(abspath $(CURDIR))/test/postgres-data,target=/var/lib/postgresql/data \
 		-e POSTGRES_PASSWORD=password \
 		-e PGAUTO_DEVEL=server \
-		pgautoupgrade/pgautoupgrade:local
+		ghcr.io/calagopus/pgautoupgrade:local
 
 test:
 	./test.sh
@@ -45,9 +45,9 @@ up:
 	docker run --name pgauto -it --rm \
 		--mount type=bind,source=$(abspath $(CURDIR))/test/postgres-data,target=/var/lib/postgresql/data \
 		-e POSTGRES_PASSWORD=password \
-		pgautoupgrade/pgautoupgrade:local
+		ghcr.io/calagopus/pgautoupgrade:local
 
 pushdev:
-	docker tag pgautoupgrade/pgautoupgrade:local pgautoupgrade/pgautoupgrade:dev
-	docker push pgautoupgrade/pgautoupgrade:dev
-	docker image rm pgautoupgrade/pgautoupgrade:dev
+	docker tag ghcr.io/calagopus/pgautoupgrade:local ghcr.io/calagopus/pgautoupgrade:dev
+	docker push ghcr.io/calagopus/pgautoupgrade:dev
+	docker image rm ghcr.io/calagopus/pgautoupgrade:dev
