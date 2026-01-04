@@ -14,7 +14,7 @@ jobs:
   base-images:
     # for security reason, we only build these images in our repository and on the main branch
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -58,7 +58,7 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}
 
   target-images:
-    runs-on: ubuntu-22.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     needs: base-images
     # otherwise, it would skip the build entirely (because the base step does not run)
     if: always()
