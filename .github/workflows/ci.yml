@@ -8,7 +8,7 @@ on:
 
 env:
   # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
-  LATEST_POSTGRES_VERSION: "18.1"
+  LATEST_POSTGRES_VERSION: "18.3"
 
 jobs:
   base-images:
@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -45,7 +45,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: "Dockerfile.${{ matrix.flavor }}"
           push: true
@@ -83,30 +83,28 @@ jobs:
         operating_system:
           - flavor: "alpine"
             # renovate: datasource=docker depName=alpine versioning=docker
-            OS_VERSION: "3.22"
+            OS_VERSION: "3.23"
             alias: "alpine"
           - flavor: "trixie"
             alias: "debian"
         pg_target:
-          - # renovate: datasource=repology depName=homebrew/postgresql@13 versioning=loose
-            PG_VERSION: "13.23"
           - # renovate: datasource=repology depName=homebrew/postgresql@14 versioning=loose
-            PG_VERSION: "14.20"
+            PG_VERSION: "14.22"
           - # renovate: datasource=repology depName=homebrew/postgresql@15 versioning=loose
-            PG_VERSION: "15.15"
+            PG_VERSION: "15.17"
           - # renovate: datasource=repology depName=homebrew/postgresql@16 versioning=loose
-            PG_VERSION: "16.11"
+            PG_VERSION: "16.13"
           - # renovate: datasource=repology depName=homebrew/postgresql@17 versioning=loose
-            PG_VERSION: "17.7"
+            PG_VERSION: "17.9"
           - # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
-            PG_VERSION: "18.1"
+            PG_VERSION: "18.3"
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -117,7 +115,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/calagopus/pgautoupgrade
           flavor: |

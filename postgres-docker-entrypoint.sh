@@ -483,6 +483,13 @@ _main() {
 				exec gosu postgres "$BASH_SOURCE" "$@"
 			fi
 
+			if [[ "$MOVING_TO_NEW_STRUCTURE" -eq 1 && -d "$PGDATA" ]]; then
+				echo "-------------------------------------------------------------------------------"
+				echo "Emptying out existing PGDATA directory at ${PGDATA} prior to moving data to new structure."
+				echo "-------------------------------------------------------------------------------"
+				rm -rf "${PGDATA:?}/"*
+			fi
+
 			create_upgrade_lock_file
 
 			# Don't automatically abort on non-0 exit status, as that messes with these upcoming mv commands
@@ -507,9 +514,17 @@ _main() {
 			echo "Moving existing data files into OLD temporary directory"
 			echo "-------------------------------------------------------"
 			if [ $MOVING_TO_NEW_STRUCTURE -eq 0 ]; then
-				find "${PGDATA}" -mindepth 1 -maxdepth 1 -not -name "old" -exec mv {} "${OLD}/" \;
+				find "${PGDATA}" \
+					-mindepth 1 -maxdepth 1 \
+					-not -name "old" \
+					-not -name "upgrade_in_progress.lock" \
+					-exec mv {} "${OLD}/" \;
 			else
-				find /var/lib/postgresql -mindepth 1 -maxdepth 1 -not -name 18 -exec mv {} "${OLD}/" \;
+				find /var/lib/postgresql \
+					-mindepth 1 -maxdepth 1 \
+					-not -name 18 \
+					-not -name "upgrade_in_progress.lock" \
+					-exec mv {} "${OLD}/" \;
 			fi
 			echo "-------------------------------------------------------------------"
 			echo "Moving existing data files into OLD temporary directory is complete"
@@ -648,7 +663,9 @@ _main() {
 			echo "-----------------------------------------------------"
 			echo "Copying the new database files to the active directory"
 			echo "-----------------------------------------------------"
-			cp -r "${NEW}"/* "${PGDATA}"
+			# Use -l to create hardlinks, since they're already used by pg_upgrade --link.
+			# This prevents copying all of the data, saving time and disk space.
+			cp -l -r "${NEW}"/* "${PGDATA}"
 			echo "-----------------------------------------"
 			echo "Moving the new database files is complete"
 			echo "-----------------------------------------"
@@ -685,7 +702,7 @@ _main() {
 				echo "Updating extensions"
 				echo "*******************"
 
-				cat "${PGDATA}/update_extensions.sql" | psql --username="${POSTGRES_USER}"
+				cat "${PGDATA}/update_extensions.sql" | psql --username="${POSTGRES_USER}" "${POSTGRES_DB:-postgres}"
 				rm -rf "${PGDATA}/update_extensions.sql"
 			fi
 
