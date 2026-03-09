@@ -1,3 +1,5 @@
+![Calagopus Logo](https://calagopus.com/fulllogo.svg)
+
 # pgautoupgrade
 
 This is a PostgreSQL Docker image to automatically upgrade
