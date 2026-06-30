@@ -31,10 +31,6 @@ manually (not great): <https://github.com/docker-library/postgres/issues/37>
 
 ## How to use this image
 
-This image is on Docker Hub:
-
-<https://hub.docker.com/r/ghcr.io/calagopus/pgautoupgrade>
-
 To always use the latest version of PostgreSQL, use the tag
 `latest`:
 
