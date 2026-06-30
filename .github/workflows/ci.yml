@@ -8,7 +8,9 @@ on:
 
 env:
   # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
-  LATEST_POSTGRES_VERSION: "18.3"
+  LATEST_POSTGRES_VERSION: "18.4"
+
+permissions: {}
 
 jobs:
   base-images:
@@ -32,10 +34,10 @@ jobs:
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -45,7 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           file: "Dockerfile.${{ matrix.flavor }}"
           push: true
@@ -89,22 +91,22 @@ jobs:
             alias: "debian"
         pg_target:
           - # renovate: datasource=repology depName=homebrew/postgresql@14 versioning=loose
-            PG_VERSION: "14.22"
+            PG_VERSION: "14.23"
           - # renovate: datasource=repology depName=homebrew/postgresql@15 versioning=loose
-            PG_VERSION: "15.17"
+            PG_VERSION: "15.18"
           - # renovate: datasource=repology depName=homebrew/postgresql@16 versioning=loose
-            PG_VERSION: "16.13"
+            PG_VERSION: "16.14"
           - # renovate: datasource=repology depName=homebrew/postgresql@17 versioning=loose
-            PG_VERSION: "17.9"
+            PG_VERSION: "17.10"
           - # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
-            PG_VERSION: "18.3"
+            PG_VERSION: "18.4"
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -115,7 +117,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ghcr.io/calagopus/pgautoupgrade
           flavor: |
@@ -131,7 +133,9 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},value=${{ matrix.pg_target.PG_VERSION }}.0,suffix=-${{ matrix.operating_system.alias }}
 
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Push image
         if: github.ref == 'refs/heads/main'
