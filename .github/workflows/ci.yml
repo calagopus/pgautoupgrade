@@ -9,6 +9,8 @@ on:
 env:
   # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
   LATEST_POSTGRES_VERSION: "18.4"
+  GHCR_IMAGE: ghcr.io/${{ github.repository }}
+  DOCKERHUB_IMAGE: docker.io/${{ github.repository }}
 
 permissions: {}
 
@@ -55,9 +57,9 @@ jobs:
           build-args: |
             "PGTARGET=${{ env.LATEST_POSTGRES_VERSION }}"
           target: "build-${{ matrix.pg_version }}"
-          tags: "ghcr.io/calagopus/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}"
+          tags: "${{ env.GHCR_IMAGE }}:build-${{ matrix.pg_version }}-${{ matrix.flavor }}"
           cache-to: type=inline
-          cache-from: type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-${{ matrix.pg_version }}-${{ matrix.flavor }}
+          cache-from: type=registry,ref=${{ env.GHCR_IMAGE }}:build-${{ matrix.pg_version }}-${{ matrix.flavor }}
 
   target-images:
     runs-on: blacksmith-2vcpu-ubuntu-2404
@@ -68,14 +70,14 @@ jobs:
       # but still use our public caches in any case
       # they might be outdated, in which case a full rebuild will be triggered
       CACHE_FROM: |
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-13-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-14-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-15-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-16-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:build-17-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}${{ matrix.operating_system.OS_VERSION }}
-        type=registry,ref=ghcr.io/calagopus/pgautoupgrade:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.alias }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:build-13-${{ matrix.operating_system.flavor }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:build-14-${{ matrix.operating_system.flavor }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:build-15-${{ matrix.operating_system.flavor }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:build-16-${{ matrix.operating_system.flavor }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:build-17-${{ matrix.operating_system.flavor }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}${{ matrix.operating_system.OS_VERSION }}
+        type=registry,ref=${{ env.GHCR_IMAGE }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.alias }}
 
     permissions:
       contents: read
@@ -115,11 +117,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
-          images: ghcr.io/calagopus/pgautoupgrade
+          images: |
+            ${{ env.GHCR_IMAGE }}
+            ${{ env.DOCKERHUB_IMAGE }}
           flavor: |
             latest=false
           # add a .0 to each Postgres version so it is compliant with semantic version
@@ -158,8 +168,10 @@ jobs:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
           tags: |
-            "ghcr.io/calagopus/pgautoupgrade:${{ matrix.operating_system.flavor }}"
-            "ghcr.io/calagopus/pgautoupgrade:${{ matrix.operating_system.alias }}"
+            "${{ env.GHCR_IMAGE }}:${{ matrix.operating_system.flavor }}"
+            "${{ env.GHCR_IMAGE }}:${{ matrix.operating_system.alias }}"
+            "${{ env.DOCKERHUB_IMAGE }}:${{ matrix.operating_system.flavor }}"
+            "${{ env.DOCKERHUB_IMAGE }}:${{ matrix.operating_system.alias }}"
           build-args: |
             "PGTARGET=${{ matrix.pg_target.PG_VERSION }}"
           push: true
@@ -173,7 +185,8 @@ jobs:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
           tags: |
-            "ghcr.io/calagopus/pgautoupgrade:latest"
+            "${{ env.GHCR_IMAGE }}:latest"
+            "${{ env.DOCKERHUB_IMAGE }}:latest"
           build-args: |
             "PGTARGET=${{ matrix.pg_target.PG_VERSION }}"
           push: true
