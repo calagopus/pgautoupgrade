@@ -70,14 +70,14 @@ jobs:
       # but still use our public caches in any case
       # they might be outdated, in which case a full rebuild will be triggered
       CACHE_FROM: |
-        type=registry,ref=${{ env.GHCR_IMAGE }}:build-13-${{ matrix.operating_system.flavor }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:build-14-${{ matrix.operating_system.flavor }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:build-15-${{ matrix.operating_system.flavor }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:build-16-${{ matrix.operating_system.flavor }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:build-17-${{ matrix.operating_system.flavor }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}${{ matrix.operating_system.OS_VERSION }}
-        type=registry,ref=${{ env.GHCR_IMAGE }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.alias }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:build-13-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:build-14-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:build-15-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:build-16-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:build-17-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.flavor }}${{ matrix.operating_system.OS_VERSION }}
+        type=registry,ref=ghcr.io/${{ github.repository }}:${{ matrix.pg_target.PG_VERSION }}-${{ matrix.operating_system.alias }}
 
     permissions:
       contents: read
