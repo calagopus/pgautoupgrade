@@ -8,7 +8,7 @@ on:
 
 env:
   # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
-  LATEST_POSTGRES_VERSION: "18.4"
+  LATEST_POSTGRES_VERSION: "18.6"
   GHCR_IMAGE: ghcr.io/${{ github.repository }}
   DOCKERHUB_IMAGE: docker.io/${{ github.repository }}
 
@@ -36,20 +36,20 @@ jobs:
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
+        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           file: "Dockerfile.${{ matrix.flavor }}"
           push: true
@@ -87,45 +87,45 @@ jobs:
         operating_system:
           - flavor: "alpine"
             # renovate: datasource=docker depName=alpine versioning=docker
-            OS_VERSION: "3.23"
+            OS_VERSION: "3.24"
             alias: "alpine"
           - flavor: "trixie"
             alias: "debian"
         pg_target:
           - # renovate: datasource=repology depName=homebrew/postgresql@14 versioning=loose
-            PG_VERSION: "14.23"
+            PG_VERSION: "14.24"
           - # renovate: datasource=repology depName=homebrew/postgresql@15 versioning=loose
-            PG_VERSION: "15.18"
+            PG_VERSION: "15.19"
           - # renovate: datasource=repology depName=homebrew/postgresql@16 versioning=loose
-            PG_VERSION: "16.14"
+            PG_VERSION: "16.15"
           - # renovate: datasource=repology depName=homebrew/postgresql@17 versioning=loose
-            PG_VERSION: "17.10"
+            PG_VERSION: "17.11"
           - # renovate: datasource=repology depName=homebrew/postgresql@18 versioning=loose
-            PG_VERSION: "18.4"
+            PG_VERSION: "18.6"
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
+        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: |
             ${{ env.GHCR_IMAGE }}
@@ -143,13 +143,13 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},value=${{ matrix.pg_target.PG_VERSION }}.0,suffix=-${{ matrix.operating_system.alias }}
 
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Push image
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
@@ -163,7 +163,7 @@ jobs:
 
       - name: Push latest image for each supported OS
         if: github.ref == 'refs/heads/main' && matrix.pg_target.PG_VERSION == env.LATEST_POSTGRES_VERSION
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
@@ -180,7 +180,7 @@ jobs:
 
       - name: Push general latest image
         if: github.ref == 'refs/heads/main' && matrix.pg_target.PG_VERSION == env.LATEST_POSTGRES_VERSION && matrix.operating_system.flavor == 'alpine'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           file: "Dockerfile.${{ matrix.operating_system.flavor }}"
           platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x
